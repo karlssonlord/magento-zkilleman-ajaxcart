@@ -41,7 +41,7 @@
             this.setOption('onSuccess',       function(response) {});
             this.setOption('onAddSuccess',    function(response) {});
             this.setOption('onRemoveSuccess', function(response) {});
-            Event.observe(_d, 'dom:loaded', this._domLoaded.bind(this));
+            Event.observe(_w, 'load', this._domLoaded.bind(this));
         },
         getOption: function(key)
         {
@@ -53,7 +53,9 @@
         },
         _domLoaded: function()
         {
+            alert('_domLoaded');
             var form = _w.productAddToCartForm;
+            alert(typeof _w.productAddToCartForm);
             if (typeof form != 'undefined') {
                 this._replaceProductForm(form);
             } else {
