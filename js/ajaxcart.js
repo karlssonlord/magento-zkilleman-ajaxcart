@@ -53,9 +53,7 @@
         },
         _domLoaded: function()
         {
-            alert('_domLoaded');
             var form = _w.productAddToCartForm;
-            alert(typeof _w.productAddToCartForm);
             if (typeof form != 'undefined') {
                 this._replaceProductForm(form);
             } else {
