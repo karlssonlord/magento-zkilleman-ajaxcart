@@ -31,12 +31,20 @@
     _w.ZkillemanAjaxCart = Class.create({
         _config: null,
         _actionProductPattern: null,
+        _actionFormKeyPattern: null,
         initialize: function(config)
         {
             this._config = $H(config || {});
             this._actionProductPattern = /\/product\/(\d*)\D|$/;
+            this._actionFormKeyPattern = /\/form_key\/(\w*)\D|$/;
             if (!this.getOption('url')) {
                 this.setOption('url', '/ajax-cart/cart/');
+            }
+            if (!this.getOption('button')) {
+                this.setOption('button', '.btn-add');
+            }
+            if (!this.getOption('cart')) {
+                this.setOption('cart', '.block-cart');
             }
             this.setOption('onSuccess',       function(response) {});
             this.setOption('onAddSuccess',    function(response) {});
@@ -54,7 +62,7 @@
         _domLoaded: function()
         {
             var form = _w.productAddToCartForm;
-            if (typeof form != 'undefined') {
+            if (typeof form !== 'undefined') {
                 this._replaceProductForm(form);
             } else {
                 this._replaceListClickActions();
@@ -96,11 +104,13 @@
         _replaceListClickActions: function()
         {
             var self = this;
-            $$('.btn-cart').each(function(elem) {
+            $$(this.getOption('button')).each(function(elem) {
+
                 var clickAction = new String(elem.getAttribute('onclick'));
                 if (!(/\/checkout\/cart\/add\//.test(clickAction))) {
                     return;
                 }
+
                 var actionMatch = clickAction.match(self._actionProductPattern);
                 var product = actionMatch.length > 1 ? parseInt(actionMatch[1]) : 0;
                 if (isNaN(product) || product <= 0) {
@@ -108,7 +118,9 @@
                 }
 
                 elem.setAttribute('onclick', 'return false;');
-                elem.observe('click', function() {
+                elem.observe('click', function(e) {
+                    Event.stop(e);
+
                     elem.setAttribute('disabled', 'disabled');
                     elem.addClassName('loading');
                     self.addProduct({
@@ -166,7 +178,7 @@
                         try {
                             response = eval('(' + transport.responseText + ')');
                         } catch (e) {
-                            // console.log(e);
+                            // TODO: Handle error
                         }
                         if (typeof self.getOption('onSuccess') == 'function') {
                             self.getOption('onSuccess')(response);
@@ -192,7 +204,7 @@
                         try {
                             response = eval('(' + transport.responseText + ')');
                         } catch (e) {
-                            // console.log(e);
+                            // TODO: Handle error
                         }
                         if (typeof self.getOption('onSuccess') == 'function') {
                             self.getOption('onSuccess')(response);
@@ -215,9 +227,16 @@
                     params = {};
                 }
 
-                var actionMatch = form.form.action.match(this._actionProductPattern);
+                var actionMatch  = form.form.action.match(this._actionProductPattern),
+                    formKeyMatch = form.form.action.match(this._actionFormKeyPattern);
                 if (actionMatch.length > 1) {
                     params.product = parseInt(actionMatch[1]);
+                }
+                if (formKeyMatch.length > 1) {
+                    params.form_key = formKeyMatch[1];
+                }
+                else {
+                    return false; // Missing form key
                 }
 
                 if (typeof params.product == 'undefined' ||
@@ -268,12 +287,12 @@
         replaceCart: function(cartHtml)
         {
             var customHandler = this.getOption('cartHandler');
-            if (typeof customHandler == 'function') {
+            if (typeof customHandler === 'function') {
                 customHandler(cartHtml);
                 return;
             }
 
-            $$('.block-cart').each(function(elem) {
+            $$(this.getOption('cart')).each(function(elem) {
                 Element.replace(elem, cartHtml);
             });
 
