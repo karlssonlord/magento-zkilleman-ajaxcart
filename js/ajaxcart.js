@@ -26,6 +26,8 @@
  * @link      https://github.com/henkelund/magento-zkilleman-ajaxcart
  */
 
+var ZkillemanAjaxCartSemiColon = {};
+
 (function(_w, _d) {
 
     _w.ZkillemanAjaxCart = Class.create({
