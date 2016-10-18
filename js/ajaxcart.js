@@ -48,6 +48,9 @@ var ZkillemanAjaxCartSemiColon = {};
             if (!this.getOption('cart')) {
                 this.setOption('cart', '.block-cart');
             }
+            if (!this.getOption('attribute')) {
+                this.setOption('attribute', 'onclick');
+            }
             this.setOption('onSuccess',       function(response) {});
             this.setOption('onAddSuccess',    function(response) {});
             this.setOption('onRemoveSuccess', function(response) {});
@@ -106,9 +109,10 @@ var ZkillemanAjaxCartSemiColon = {};
         _replaceListClickActions: function()
         {
             var self = this;
+
             $$(this.getOption('button')).each(function(elem) {
 
-                var clickAction = new String(elem.getAttribute('onclick'));
+                var clickAction = new String(elem.getAttribute(self.getOption('attribute')));
                 if (!(/\/checkout\/cart\/add\//.test(clickAction))) {
                     return;
                 }
@@ -119,15 +123,23 @@ var ZkillemanAjaxCartSemiColon = {};
                     return;
                 }
 
+                var params = {};
+
+                params.product = product;
+
+                var keyMatch = clickAction.match(/\/form_key\/([a-zA-Z0-9]+)/);
+
+                if (keyMatch && keyMatch.length > 1) {
+                    params.form_key = keyMatch[1];
+                }
+
                 elem.setAttribute('onclick', 'return false;');
                 elem.observe('click', function(e) {
                     Event.stop(e);
 
                     elem.setAttribute('disabled', 'disabled');
                     elem.addClassName('loading');
-                    self.addProduct({
-                        product: product
-                    }, function(response) {
+                    self.addProduct(params, function(response) {
                         self._handleResponse(response);
                         elem.removeAttribute('disabled');
                         elem.removeClassName('loading');

@@ -91,8 +91,8 @@ class Zkilleman_AjaxCart_CartController extends Mage_Checkout_CartController
         }
 
         $this->loadLayout();
-        $topLinksBlock = $this->getLayout()->getBlock('top.links');
-        $sidebarBlock  = $this->getLayout()->getBlock('cart_sidebar');
+        $topLinksBlock = $this->getLayout()->getBlock(Mage::getStoreConfig('ajaxcart/general/top_links_block'));
+        $sidebarBlock  = $this->getLayout()->getBlock(Mage::getStoreConfig('ajaxcart/general/sidebar_block'));
 
         $cartLink = false;
         if ($topLinksBlock && $topLinksBlock instanceof Mage_Page_Block_Template_Links) {

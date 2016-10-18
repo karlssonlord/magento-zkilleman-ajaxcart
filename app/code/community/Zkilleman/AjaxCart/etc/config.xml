@@ -81,6 +81,8 @@
         <ajaxcart>
             <general>
                 <enabled>1</enabled>
+                <top_links_block>top.links</top_links_block>
+                <sidebar_block>cart_sidebar</sidebar_block>
             </general>
         </ajaxcart>
     </default>
